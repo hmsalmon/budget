@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Budget Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Projections by date</th>
+                <!-- <th>Billing Cycle</th>
+                <th>Total</th>
+                <th></th> -->
+            </tr>
+        </thead>
+
+        <tbody>
+            <!-- Accordion Header Row -->
+            <tr data-bs-toggle="collapse" data-bs-target="#cycle1-details" class="accordion-toggle" onchange="this.form.submit()">
+                <td>December 2025 Statement ($1,240)</td>
+                <!-- <td>$1,240</td> -->
+                <!-- <td><button class="btn btn-sm btn-primary">View</button></td> -->
+            </tr>
+
+            <!-- Hidden Detail Rows -->
+            <tr>
+                <td colspan="3" class="hiddenRow">
+                    <div class="collapse" id="cycle1-details">
+                        <table class="table mb-0">
+                            <tr>
+                                <td>Rent</td>
+                                <td>$1000</td>
+                            </tr>
+                            <tr>
+                                <td>Phone</td>
+                                <td>$40</td>
+                            </tr>
+                            <tr>
+                                <td>Gym</td>
+                                <td>$200</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Repeat for another cycle -->
+            <tr data-bs-toggle="collapse" data-bs-target="#cycle2-details" class="accordion-toggle" onchange = "this.form.submit()">
+                <td>January 2026 Statement ($310)</td>
+                <!-- <td>$310</td> -->
+                <!-- <td><button class="btn btn-sm btn-primary">View</button></td> -->
+            </tr>
+            <tr>
+                <td colspan="3" class="hiddenRow">
+                    <div class="collapse" id="cycle2-details">
+                        <table class="table mb-0">
+                            <tr>
+                                <td>Groceries</td>
+                                <td>$120</td>
+                            </tr>
+                            <tr>
+                                <td>Fuel</td>
+                                <td>$50</td>
+                            </tr>
+                            <tr>
+                                <td>Snacks</td>
+                                <td>$140</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>
