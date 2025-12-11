@@ -16,3 +16,18 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.get_transaction_type_display()})"
+
+class BillingCycle(models.Model):
+
+    code = models.CharField(max_length=5)
+    fullName = models.CharField(max_length=12)
+    startDate = models.DateField()
+    endDate = models.DateField()
+
+    def __str__(self):
+        return f"{self.fullName}"
+
+
+
+
+    
