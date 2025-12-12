@@ -20,9 +20,12 @@ class Transaction(models.Model):
 class BillingCycle(models.Model):
 
     code = models.CharField(max_length=5)
-    fullName = models.CharField(max_length=12)
+    fullName = models.CharField(max_length=14)
+    displayName = models.CharField(max_length=24)
     startDate = models.DateField()
     endDate = models.DateField()
+    dueDate = models.DateField()
+    daysInCycle = models.IntegerField()
 
     def __str__(self):
         return f"{self.fullName}"
