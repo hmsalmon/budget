@@ -47,7 +47,7 @@ class Command(BaseCommand):
         
         #endDay = [14,11,14,13,14,13,14,14,13,14,13,14]
 
-        date_test = date(2025,12,31)
+        date_test = date.today()#date(2025,12,31)
 
         yr = date_test.year
         mon = date_test.month
@@ -77,17 +77,21 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"prev_state_year: {prev_state_year}"))
         self.stdout.write(self.style.SUCCESS(f"startDay: {startDay}"))
 
-        full = f"{monthList[statement_mon]} {statement_yr} Statement"
+        full = f"{monthList[statement_mon]} {statement_yr}"
+        display = f"{full} Statement"
         code = f"{monthList[statement_mon][:3]}{str(statement_yr)[2:]}"
 
         self.stdout.write(self.style.SUCCESS(f"full: {full}"))
         self.stdout.write(self.style.SUCCESS(f"code: {code}"))
 
-        obj, created = BillingCycle.objects.get_or_create(startDate=date(prev_state_year,prev_state_mon,startDay),
-                                                          endDate=date(statement_yr,statement_mon,endDay[statement_mon]),
-                                                          code=code,
-                                                          fullName=full)
+        # obj, created = BillingCycle.objects.create(startDate=date(prev_state_year,prev_state_mon,startDay),
+        #                                                   endDate=date(statement_yr,statement_mon,endDay[statement_mon]),
+        #                                                   code=code,
+        #                                                   fullName=full,
+        #                                                   displayName=display,
+        #                                                   daysInCycle=calendar.monthrange(statement_yr,statement_mon)[1])
 
+        obj = BillingCycle.objects.count()
 
 
         # while current <= end:
@@ -98,5 +102,5 @@ class Command(BaseCommand):
 
 
 
-
-        #self.stdout.write(self.style.SUCCESS(f"Testing value: {test}"))
+        self.stdout.write(self.style.SUCCESS(f"Testing value: {obj}"))
+        #self.stdout.write(self.style.SUCCESS(f"Testing value: {created}"))

@@ -11,7 +11,7 @@ class Transaction(models.Model):
     transaction_type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
     category = models.CharField(max_length=100)
     date = models.DateField(auto_now_add=True)
-    billingCycle = models.CharField(max_length=50, default= "Dec25")
+    billingCycle = models.CharField(max_length=50)
     notes = models.TextField(blank=True)
 
     def __str__(self):
@@ -19,13 +19,13 @@ class Transaction(models.Model):
 
 class BillingCycle(models.Model):
 
-    code = models.CharField(max_length=5)
-    fullName = models.CharField(max_length=14)
-    displayName = models.CharField(max_length=24)
-    startDate = models.DateField()
-    endDate = models.DateField()
-    dueDate = models.DateField()
-    daysInCycle = models.IntegerField()
+    code = models.CharField(max_length=5, unique = True)
+    fullName = models.CharField(max_length=14, unique = True)
+    displayName = models.CharField(max_length=24,null=True, unique = True)
+    startDate = models.DateField(null=True, unique = True)
+    endDate = models.DateField(null=True, unique = True)
+    dueDate = models.DateField(null=True, unique = True)
+    daysInCycle = models.IntegerField(default = 30)
 
     def __str__(self):
         return f"{self.fullName}"
