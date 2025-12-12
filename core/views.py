@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Transaction
+from .models import Transaction, BillingCycle
 from .forms import TransactionForm
 
 def index(request):
@@ -41,4 +41,11 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', context)
 
 def overview(request):
-    return render(request, 'core/overview.html')
+
+    bc = BillingCycle.objects.order_by("endDate")
+
+    context = {
+        'billingCycles': bc
+    }
+
+    return render(request, 'core/overview.html',context)

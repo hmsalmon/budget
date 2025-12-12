@@ -12,7 +12,6 @@ class Command(BaseCommand):
         return super().add_arguments(parser)
 
     def handle(self, *args, **options):
-        #start = calendar.monthrange(2025,2)[1]#date.today().day
 
         year_to_generate = options["year"]
   
@@ -75,10 +74,10 @@ class Command(BaseCommand):
             display = f"{full} Statement"
             code = f"{monthList[statement_mon][:3]}{str(statement_yr)[2:]}"
 
-            #self.stdout.write(self.style.ERROR(f"full: {full}"))
-            #self.stdout.write(self.style.ERROR(f"code: {code}"))
+            #self.stdout.write(self.style.ERROR(f"full: {full}")) #debug only
+            #self.stdout.write(self.style.ERROR(f"code: {code}")) #debug only
 
-            obj, created = BillingCycle.objects.get_or_create(startDate=date(prev_state_year,prev_state_mon,startDay),
+            _, created = BillingCycle.objects.get_or_create(startDate=date(prev_state_year,prev_state_mon,startDay),
                                                               endDate=date(statement_yr,statement_mon,endDay[statement_mon]),
                                                               code=code,
                                                               fullName=full,
