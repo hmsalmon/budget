@@ -25,7 +25,7 @@
             {% for b in billingCycles %}
                 <!-- <option value = "{{ b }}" {% if b == selected_cycle %}selected{% endif %}> {{ b }}</option> -->
 
-                <tr data-bs-toggle="collapse" data-bs-target="#cycle1-details" class="accordion-toggle" onchange="this.form.submit()">
+                <tr data-bs-toggle="collapse" data-bs-target="#cycle1-{{ b.id }}" class="accordion-toggle" onchange="this.form.submit()">
                     <td>{{ b.displayName }}</td>
                     <!-- <td>$1,240</td> -->
                     <!-- <td><button class="btn btn-sm btn-primary">View</button></td> -->
@@ -34,7 +34,7 @@
                 <!-- Hidden Detail Rows -->
                 <tr>
                     <td colspan="3" class="hiddenRow">
-                        <div class="collapse" id="cycle1-details">
+                        <div class="collapse" id="cycle1-{{ b.id }}">
                             <table class="table mb-0">
                                 
                                 <tr>

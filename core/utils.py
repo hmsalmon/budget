@@ -1,16 +1,15 @@
 from datetime import date
-from .models import BillingCycle
+from .models import BillingCycle, Transaction
 
+def create_transaction(date, description, amount):
+    cycle = BillingCycle.objects.get(
+        start_date__lte=date,
+        end_date__gte=date
+    )
 
-def date_to_billingcycle(date : date):
-
-    bill_cycles = BillingCycle.objects.all()
-
-    sel_bc_code = None
-    for bc in bill_cycles:
-        if bc.endDate >= date & bc.startDate <= date:
-            sel_bc_code = bc.code
-            
-
-    return sel_bc_code
+    return Transaction.objects.create(
+        billing_cycle=cycle,
+        description=description,
+        amount=amount
+    )
 

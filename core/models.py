@@ -43,6 +43,11 @@ class Transaction(models.Model):
     transaction_type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
     category = models.CharField(max_length=100)
     date = models.DateField(auto_now_add=True)
+    billing_cycle = models.ForeignKey(
+        BillingCycle,
+        on_delete=models.SET_NULL,
+        related_name="transactions"
+    )
     billingCycle = models.CharField(max_length=50)#, default=date_to_billingcycle(date))
     notes = models.TextField(blank=True)
 
