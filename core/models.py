@@ -1,6 +1,5 @@
 from django.db import models
 from datetime import date
-#from core.utils import date_to_billingcycle
 
 class BillingCycle(models.Model):
 
@@ -16,21 +15,6 @@ class BillingCycle(models.Model):
         return f"{self.fullName}"
 
 
-# def date_to_billingcycle(date_to_check : date):
-
-#     bill_cycles = BillingCycle.objects.all()
-
-#     sel_bc_code = None
-#     for bc in bill_cycles:
-
-#         print(date(bc.endDate))
-
-#         if (date(bc.endDate) >= date_to_check) & (date(bc.startDate) <= date_to_check):
-#             sel_bc_code = bc.code
-            
-
-#     return sel_bc_code
-
 
 class Transaction(models.Model):
     TRANSACTION_TYPES = [
@@ -45,11 +29,23 @@ class Transaction(models.Model):
     date = models.DateField(auto_now_add=True)
     billing_cycle = models.ForeignKey(
         BillingCycle,
-        on_delete=models.SET_NULL,
-        related_name="transactions"
-    )
-    billingCycle = models.CharField(max_length=50)#, default=date_to_billingcycle(date))
+        on_delete=models.PROTECT,
+        related_name="transactions",
+        null=True,
+        blank=True
+        )
+    
+    #billingCycle = models.CharField(max_length=50)#, default=date_to_billingcycle(date))
     notes = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.billing_cycle_id:
+            self.billing_cycle = BillingCycle.objects.filter(
+                start_date__lte=self.date,
+                end_date__gte=self.date
+            ).get()  # use get() if cycles never overlap
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} ({self.get_transaction_type_display()})"

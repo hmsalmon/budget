@@ -82,7 +82,7 @@
                 <tbody>
                 {% for t in transactions %}
                 <tr>
-                    <td>{{ t.billingCycle }}</td>
+                    <td>{{ t.billing_cycle_id }}</td>
                     <td>{{ t.date }}</td>
                     <td>{{ t.title }}</td>
                     <td>{{ t.get_transaction_type_display }}</td>
