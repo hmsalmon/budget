@@ -25,7 +25,7 @@
             {% for b in billingCycles %}
 
                 <tr data-bs-toggle="collapse" data-bs-target="#cycle1-{{ b.id }}" class="accordion-toggle" onchange="this.form.submit()">
-                    <td>{{ b.displayName }}</td>
+                    <td>{{ b.displayName }} | Transactions {{b.num_trans}} | Cost {{b.total_amount}}</td>
                 </tr>
 
                 <!-- Hidden Detail Rows -->
@@ -34,7 +34,31 @@
                         <div class="collapse" id="cycle1-{{ b.id }}">
                             <table class="table mb-0">
                                 
+                                <thead class="table-light">
                                 <tr>
+                                    <th>Item Name</th>
+                                    <th>Cost</th>
+                                </tr>
+                                </thead>
+
+                                {% for txn in b.transactions.all %}
+
+                                    <tbody>
+                                    <tr>
+                                        <td>{{ txn.title }}</td>
+                                        <td>{{ txn.amount }}</td>
+                                    </tr>
+                                    </tbody>
+
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No transactions yet.</td>
+                                </tr>
+                                {% endfor %}
+
+
+
+                                <!-- <tr>
                                     <td>Rent</td>
                                     <td>$1000</td>
                                 </tr>
@@ -45,7 +69,7 @@
                                 <tr>
                                     <td>Gym</td>
                                     <td>$200</td>
-                                </tr>
+                                </tr> -->
                             </table>
                         </div>
                     </td>

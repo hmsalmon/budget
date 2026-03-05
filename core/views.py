@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone as tz
+from django.db.models import Sum, Count
 from .models import Transaction, BillingCycle
 from .forms import TransactionForm
 
@@ -9,11 +11,14 @@ def dashboard(request):
 
     #transactions = Transaction.objects.select_related('billing_cycle').all().order_by('date')
 
+    billingCycles = BillingCycle.objects.all().order_by('startDate')
+    current_bill_cycle = billingCycles.filter(endDate__gte = '2026-03-05').first()
+
     try:
-        sel_cycle = request.GET.get('sel_cycle',"1") or request.POST.get('sel_cycle',"1")
+        sel_cycle = request.GET.get('sel_cycle',current_bill_cycle.id) or request.POST.get('sel_cycle',current_bill_cycle.id)
         sel_cycle = int(sel_cycle)
     except (TypeError, ValueError):
-        sel_cycle = 1
+        sel_cycle = current_bill_cycle.id
 
     transactions = Transaction.objects.select_related('billing_cycle').filter(billing_cycle_id = sel_cycle).order_by('date')
 
@@ -21,7 +26,6 @@ def dashboard(request):
     total_expense = sum(t.amount for t in transactions if t.transaction_type == 'EX')
     balance = total_income - total_expense
 
-    billingCycles = BillingCycle.objects.all().order_by('startDate')#filter(id = sel_cycle)#values_list('displayName', flat=True).distinct()#Transaction.objects.select_related('billing_cycle')#.distinct() #.values_list('billing_cycle_id', flat=True)
 
     form = TransactionForm()
     if request.method == 'POST':
@@ -30,7 +34,6 @@ def dashboard(request):
             form.save()
             return redirect('dashboard')
     else:
-        print(form.errors)
         form = TransactionForm()
 
     context = {
@@ -46,7 +49,10 @@ def dashboard(request):
 
 def overview(request):
 
-    bc = BillingCycle.objects.order_by("endDate")
+    bc = BillingCycle.objects.order_by("endDate").annotate(
+        total_amount=Sum("transactions__amount"),
+        num_trans=Count("transactions__id")
+    )
 
     context = {
         'billingCycles': bc
