@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import date
+from django.utils import timezone
 
 class BillingCycle(models.Model):
 
@@ -26,7 +26,7 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
     category = models.CharField(max_length=100)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(default=timezone.now)
     billing_cycle = models.ForeignKey(
         BillingCycle,
         on_delete=models.PROTECT,
@@ -41,8 +41,8 @@ class Transaction(models.Model):
     def save(self, *args, **kwargs):
         if not self.billing_cycle_id:
             self.billing_cycle = BillingCycle.objects.filter(
-                start_date__lte=self.date,
-                end_date__gte=self.date
+                startDate__lte=self.date,
+                endDate__gte=self.date
             ).get()  # use get() if cycles never overlap
 
         super().save(*args, **kwargs)

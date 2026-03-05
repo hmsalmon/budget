@@ -49,7 +49,7 @@
             <form method="GET" class = "col-md-4">
                 <select name="sel_cycle" class="form-select" style="max-width: 200px; display: inline-block;" onchange="this.form.submit()">
                     {% for b in billingCycles %}
-                        <option value = "{{ b }}" {% if b == selected_cycle %}selected{% endif %}> {{ b }}</option>
+                        <option value = "{{ b.id }}" {% if b.id == selected_cycle %}selected{% endif %}> {{ b.displayName }}</option>
                     {% endfor %}
                 </select>
             </form>
@@ -82,7 +82,7 @@
                 <tbody>
                 {% for t in transactions %}
                 <tr>
-                    <td>{{ t.billing_cycle_id }}</td>
+                    <td>{{ t.billing_cycle.displayName }}</td>
                     <td>{{ t.date }}</td>
                     <td>{{ t.title }}</td>
                     <td>{{ t.get_transaction_type_display }}</td>

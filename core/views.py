@@ -7,27 +7,31 @@ def index(request):
 
 def dashboard(request):
 
-    transactions = Transaction.objects.all().order_by('date')
+    #transactions = Transaction.objects.select_related('billing_cycle').all().order_by('date')
 
-    # sel_cycle = "Dec25"
-    # if request.method == 'GET':
-    #     sel_cycle = request.GET.get('sel_cycle','Dec25')
-    
-    # transactions = transactions.filter(billing_cycle=1)
+    try:
+        sel_cycle = request.GET.get('sel_cycle',"1") or request.POST.get('sel_cycle',"1")
+        sel_cycle = int(sel_cycle)
+    except (TypeError, ValueError):
+        sel_cycle = 1
+
+    transactions = Transaction.objects.select_related('billing_cycle').filter(billing_cycle_id = sel_cycle).order_by('date')
 
     total_income = sum(t.amount for t in transactions if t.transaction_type == 'IN')
     total_expense = sum(t.amount for t in transactions if t.transaction_type == 'EX')
     balance = total_income - total_expense
 
-    billingCycles = Transaction.objects.values_list('billing_cycle_id', flat=True).distinct()
+    billingCycles = BillingCycle.objects.all().order_by('startDate')#filter(id = sel_cycle)#values_list('displayName', flat=True).distinct()#Transaction.objects.select_related('billing_cycle')#.distinct() #.values_list('billing_cycle_id', flat=True)
 
-    # if request.method == 'POST':
-    #     form = TransactionForm(request.POST)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('dashboard')
-    # else:
-    #     form = TransactionForm()
+    form = TransactionForm()
+    if request.method == 'POST':
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        print(form.errors)
+        form = TransactionForm()
 
     context = {
         'transactions': transactions,
@@ -35,8 +39,8 @@ def dashboard(request):
         'total_expense': total_expense,
         'balance': balance,
         'billingCycles': billingCycles,
-        'form': TransactionForm(),
-        'selected_cycle': 1
+        'form': form,
+        'selected_cycle': sel_cycle
     }
     return render(request, 'core/dashboard.html', context)
 
