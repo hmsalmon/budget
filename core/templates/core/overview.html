@@ -1,87 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Budget Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+{% extends "core/base.html" %}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}Accordian{% endblock %}
 
-    <table class="table table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Projections by date</th>
-                <!-- <th>Billing Cycle</th>
-                <th>Total</th>
-                <th></th> -->
+{% block content%}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Projections by date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <!-- Accordion Header Row -->
+
+        {% for b in billingCycles %}
+
+            <tr data-bs-toggle="collapse" data-bs-target="#cycle1-{{ b.id }}" class="accordion-toggle" onchange="this.form.submit()">
+                <td>{{ b.displayName }} | Transactions {{b.num_trans}} | Cost ${{b.total_amount}}</td>
             </tr>
-        </thead>
 
-        <tbody>
-            <!-- Accordion Header Row -->
+            <!-- Hidden Detail Rows -->
+            <tr>
+                <td colspan="3" class="hiddenRow">
+                    <div class="collapse" id="cycle1-{{ b.id }}">
+                        <table class="table mb-0">
+                            
+                            <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Item Name</th>
+                                <th>Cost</th>
+                            </tr>
+                            </thead>
 
-            {% for b in billingCycles %}
+                            {% for txn in b.transactions.all %}
 
-                <tr data-bs-toggle="collapse" data-bs-target="#cycle1-{{ b.id }}" class="accordion-toggle" onchange="this.form.submit()">
-                    <td>{{ b.displayName }} | Transactions {{b.num_trans}} | Cost {{b.total_amount}}</td>
-                </tr>
-
-                <!-- Hidden Detail Rows -->
-                <tr>
-                    <td colspan="3" class="hiddenRow">
-                        <div class="collapse" id="cycle1-{{ b.id }}">
-                            <table class="table mb-0">
-                                
-                                <thead class="table-light">
+                                <tbody>
                                 <tr>
-                                    <th>Item Name</th>
-                                    <th>Cost</th>
+                                    <td>{{ txn.date }}</td>
+                                    <td>{{ txn.title }}</td>
+                                    <td>{{ txn.amount }}</td>
                                 </tr>
-                                </thead>
+                                </tbody>
 
-                                {% for txn in b.transactions.all %}
-
-                                    <tbody>
-                                    <tr>
-                                        <td>{{ txn.title }}</td>
-                                        <td>{{ txn.amount }}</td>
-                                    </tr>
-                                    </tbody>
-
-                                {% empty %}
-                                <tr>
-                                    <td colspan="7" class="text-center">No transactions yet.</td>
-                                </tr>
-                                {% endfor %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">No transactions yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </td>
+            </tr>
 
 
+        {% endfor %}
+    </tbody>
+</table>
 
-                                <!-- <tr>
-                                    <td>Rent</td>
-                                    <td>$1000</td>
-                                </tr>
-                                <tr>
-                                    <td>Phone</td>
-                                    <td>$40</td>
-                                </tr>
-                                <tr>
-                                    <td>Gym</td>
-                                    <td>$200</td>
-                                </tr> -->
-                            </table>
-                        </div>
-                    </td>
-                </tr>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-</body>
-</html>
+{% endblock %}

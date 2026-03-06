@@ -1,1 +1,55 @@
-<h1>Welcome to My Core App!</h1>
+{% extends "core/base.html" %}
+
+{% block title%}Change Values{% endblock %}
+
+
+{% block content %}
+
+<!-- <h1>Welcome to My Core App!</h1> -->
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Test</h1>
+
+
+    <form method="POST">
+
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    <table>
+
+    <thead>
+        <th>Date</th>
+        <th>Title</th>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Notes</th>
+    </thead>
+
+
+    {% for form in formset %}
+
+    <tr>
+
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        <td>{{ form.date }}</td>
+        <td>{{ form.title }}</td>
+        <td>{{ form.amount }}</td>
+        <td>{{ form.transaction_type }}</td>
+        <td>{{ form.category }}</td>
+        <td>{{ form.notes }}</td>
+    </tr>
+
+    {% endfor %}
+
+    </table>
+    <button type="submit">Save</button>
+    </form>
+
+    {% endblock %}
+
+</div>

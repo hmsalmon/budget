@@ -3,9 +3,30 @@ from django.utils import timezone as tz
 from django.db.models import Sum, Count
 from .models import Transaction, BillingCycle
 from .forms import TransactionForm
+from django.forms import modelformset_factory
 
 def index(request):
-    return render(request, 'core/index.html')
+
+    TransactionFormSet = modelformset_factory(
+        Transaction,
+        fields=("date", "title", "amount", "category", "transaction_type", "notes"),
+        extra=0
+    )
+
+    if request.method == "POST":
+        formset = TransactionFormSet(request.POST)
+
+        if formset.is_valid():
+            formset.save()
+
+    else:
+        formset = TransactionFormSet()
+
+    context = {
+        "formset": formset
+    }
+
+    return render(request, 'core/index.html', context)
 
 def dashboard(request):
 
