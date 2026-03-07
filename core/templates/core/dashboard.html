@@ -1,114 +1,113 @@
 {% extends "core/base.html" %}
 
-{% block title%}Dashboard{% endblock%}
+{% block tabtitle%}Dashboard{% endblock%}
+
+{% block pagetitle%}Budget Dashboard{% endblock %}
 
 {% block content%}
 
-<div class="container mt-5">
-    <h1 class="mb-4 text-center">Budget Dashboard</h1>
-
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-header">Total Income</div>
-                <div class="card-body">
-                    <h5 class="card-title">${{ total_income }}</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-danger mb-3">
-                <div class="card-header">Total Expense</div>
-                <div class="card-body">
-                    <h5 class="card-title">${{ total_expense }}</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-header">Balance</div>
-                <div class="card-body">
-                    <h5 class="card-title">${{ balance }}</h5>
-                </div>
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Total Income</div>
+            <div class="card-body">
+                <h5 class="card-title">${{ total_income }}</h5>
             </div>
         </div>
     </div>
-
-
-    <div class = "row mb-4">
-        <div class = "col-md-4">
-            <div class = "card card-header bg-dark text-white">
-                Select Billing Period to view transactions
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Total Expense</div>
+            <div class="card-body">
+                <h5 class="card-title">${{ total_expense }}</h5>
             </div>
         </div>
-        
-        <div class = "col-md-4">
-            <form method="GET" class = "col-md-4">
-                <select name="sel_cycle" class="form-select" style="max-width: 200px; display: inline-block;" onchange="this.form.submit()">
-                    {% for b in billingCycles %}
-                        <option value = "{{ b.id }}" {% if b.id == selected_cycle %}selected{% endif %}> {{ b.displayName }}</option>
-                    {% endfor %}
-                </select>
-            </form>
-        </div>
-
-        <div class = "col-md-4">
-            <div>{{selected_cycle}}</div>
-        </div>
     </div>
-
-
-    <!-- Transactions Table -->
-    <div class="card">
-        <div class="card-header bg-dark text-white">
-            Transactions for December 2025 Billing Cycle
-        </div>
-        <div class="card-body">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                <tr>
-                    <th>Date</th>
-                    <th>Title</th>
-                    <th>Type</th>
-                    <th>Category</th>
-                    <th>Amount</th>
-                    <th>Notes</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for t in transactions %}
-                <tr>
-                    <td>{{ t.date }}</td>
-                    <td>{{ t.title }}</td>
-                    <td>{{ t.get_transaction_type_display }}</td>
-                    <td>{{ t.category }}</td>
-                    <td>${{ t.amount }}</td>
-                    <td>{{ t.notes }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center">No transactions yet.</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Optional: Add new transaction form -->
-    <div class="card mt-4">
-        <div class="card-header bg-secondary text-white">
-            Add New Transaction
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Add Transaction</button>
-            </form>
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Balance</div>
+            <div class="card-body">
+                <h5 class="card-title">${{ balance }}</h5>
+            </div>
         </div>
     </div>
 </div>
+
+
+<div class = "row mb-4">
+    <div class = "col-md-4">
+        <div class = "card card-header bg-dark text-white">
+            Select Billing Period to view transactions
+        </div>
+    </div>
+    
+    <div class = "col-md-4">
+        <form method="GET" class = "col-md-4">
+            <select name="sel_cycle" class="form-select" style="max-width: 200px; display: inline-block;" onchange="this.form.submit()">
+                {% for b in billingCycles %}
+                    <option value = "{{ b.id }}" {% if b.id == selected_cycle %}selected{% endif %}> {{ b.displayName }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <div class = "col-md-4">
+        <div>{{selected_cycle}}</div>
+    </div>
+</div>
+
+
+<!-- Transactions Table -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        Transactions for December 2025 Billing Cycle
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Notes</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t.date }}</td>
+                <td>{{ t.title }}</td>
+                <td>{{ t.get_transaction_type_display }}</td>
+                <td>{{ t.category }}</td>
+                <td>${{ t.amount }}</td>
+                <td>{{ t.notes }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No transactions yet.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Optional: Add new transaction form -->
+<div class="card mt-4">
+    <div class="card-header bg-secondary text-white">
+        Add New Transaction
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Add Transaction</button>
+        </form>
+    </div>
+</div>
+
 
 {% endblock %}
