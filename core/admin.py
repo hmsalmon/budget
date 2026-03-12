@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Transaction, BillingCycle
+from .models import Transaction, BillingCycle, Date
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
@@ -9,5 +9,10 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(BillingCycle)
 class BillingCycleAdmin(admin.ModelAdmin):
-    list_display = ('fullName', 'startDate', 'endDate')
+    list_display = ('fullName', 'startDate', 'endDate','dueDate')
     list_filter = ('fullName','code','displayName', 'startDate', 'endDate','dueDate')
+
+@admin.register(Date)
+class DateAdmin(admin.ModelAdmin):
+    list_display = ('date', 'isWeekend')
+    list_filter = ('date','day','month', 'year', 'week','monthName','weekdayName', 'isWeekend')

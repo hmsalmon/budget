@@ -1,6 +1,24 @@
 from django.db import models
 from django.utils import timezone
 
+class Date(models.Model):
+
+    date = models.DateField(unique = True)
+
+    day = models.IntegerField()
+    month = models.IntegerField()
+    year = models.IntegerField()
+
+    week= models.IntegerField()
+
+    monthName = models.CharField(max_length=10)
+    weekdayName = models.CharField(max_length=10)
+
+    isWeekend = models.BooleanField()
+
+    def __str__(self):
+        return f"{self.date}"
+
 class BillingCycle(models.Model):
 
     code = models.CharField(max_length=5, unique = True)
@@ -15,7 +33,6 @@ class BillingCycle(models.Model):
         return f"{self.fullName}"
 
 
-
 class Transaction(models.Model):
     TRANSACTION_TYPES = [
         ('IN', 'Income'),
@@ -27,6 +44,12 @@ class Transaction(models.Model):
     transaction_type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
     category = models.CharField(max_length=100)
     date = models.DateField(default=timezone.now)
+    # dateLink = models.ForeignKey(
+    #     Date,
+    #     on_delete=models.CASCADE,
+    #     related_name="transactions",
+    #     null=True,
+    #     blank=True)
     billing_cycle = models.ForeignKey(
         BillingCycle,
         on_delete=models.PROTECT,
@@ -49,6 +72,7 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.get_transaction_type_display()})"
+
 
 
 

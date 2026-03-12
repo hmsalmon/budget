@@ -80,3 +80,11 @@ def overview(request):
     }
 
     return render(request, 'core/overview.html',context)
+
+def scheduled(request):
+
+    context = {
+        
+    }
+
+    return render(request, 'core/scheduled.html', context)
