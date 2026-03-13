@@ -3,7 +3,7 @@ from django.utils import timezone
 
 class Date(models.Model):
 
-    date = models.DateField(unique = True)
+    date = models.DateField(primary_key = True)
 
     day = models.IntegerField()
     month = models.IntegerField()
@@ -43,11 +43,11 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
     category = models.CharField(max_length=100)
-    date = models.DateField(default=timezone.now)
-    # dateLink = models.ForeignKey(
-    #     Date,
-    #     on_delete=models.CASCADE,
-    #     related_name="transactions",
+    # date = models.DateField(default=timezone.now)
+    date = models.ForeignKey(
+        Date,
+        on_delete=models.CASCADE,
+        related_name="transactions")
     #     null=True,
     #     blank=True)
     billing_cycle = models.ForeignKey(

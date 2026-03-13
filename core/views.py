@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone as tz
 from django.db.models import Sum, Count
-from .models import Transaction, BillingCycle
+from .models import Transaction, BillingCycle, Date
 from .forms import TransactionForm
 from django.forms import modelformset_factory
+from datetime import date
 
 def index(request):
 
@@ -70,12 +71,35 @@ def dashboard(request):
 
 def overview(request):
 
-    bc = BillingCycle.objects.order_by("endDate").annotate(
-        total_amount=Sum("transactions__amount"),
-        num_trans=Count("transactions__id")
+    year_choices = Date.objects.filter(year__gte = 2025).values_list("year", flat=True).distinct()
+
+
+    current_year = date.today().year
+    try:
+        sel_year = request.GET.get('sel_year',current_year) or request.POST.get('sel_year',current_year)
+        sel_year = int(sel_year)
+    except (TypeError, ValueError):
+        sel_year = current_year
+
+    #date = Date.objects.select_related("transactions").filter(year = sel_year).order_by("date")
+
+    trans_bymonth = Transaction.objects.filter(date__year = sel_year)
+    
+    #Date.objects.filter(year = sel_year).
+
+
+    bc = BillingCycle.objects.filter(
+        endDate__gte = date(sel_year,1,1),
+        endDate__lte = date(sel_year + 1,1,1)
+        ).order_by("endDate"
+        ).annotate(
+            total_amount=Sum("transactions__amount"),
+            num_trans=Count("transactions__id")
     )
 
     context = {
+        'years' : year_choices,
+        'selected_year': sel_year,
         'billingCycles': bc
     }
 
@@ -84,7 +108,7 @@ def overview(request):
 def scheduled(request):
 
     context = {
-        
+
     }
 
     return render(request, 'core/scheduled.html', context)

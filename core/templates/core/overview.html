@@ -6,6 +6,39 @@
 
 {% block content%}
 
+<div class = "row mb-4">
+    <div class = "col-md-4">
+        <div class = "card card-header bg-dark text-white">
+            Filter Transaction history
+        </div>
+    </div>
+
+    <div class = "col-md-4">
+        <select name="breakdown_type" class="form-select">
+            <option>
+                By Month
+            </option>
+
+            <option>
+                By Billing Cycle
+            </option>
+        </select>
+    </div>
+    
+    <div class = "col-md-4">
+        <form method="GET" class = "col-md-4">
+            <select name="sel_year" class="form-select" style="max-width: 200px; display: inline-block;" onchange="this.form.submit()">
+                {% for y in years %}
+
+                    <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</div>
+
+
 <table class="table table-bordered">
     <!-- <thead class="table-dark">
         <tr>
@@ -48,7 +81,7 @@
 
                             {% empty %}
                             <tr>
-                                <td colspan="7" class="text-center">No transactions yet.</td>
+                                <td colspan="7" class="text-center">No transactions</td>
                             </tr>
                             {% endfor %}
                         </table>
