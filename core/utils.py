@@ -1,5 +1,12 @@
-from datetime import date
-from .models import BillingCycle, Transaction
+from django.utils import timezone
+from .models import Date
+
+def get_today():
+
+    today = timezone.datetime.today()
+    todayRecord = Date.objects.filter(date = today).first()
+    return todayRecord.date
+
 
 # def create_transaction(date, description, amount):
 #     cycle = BillingCycle.objects.get(

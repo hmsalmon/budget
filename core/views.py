@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone as tz
 from django.db.models import Sum, Count
-from .models import Transaction, BillingCycle, Date
-from .forms import TransactionForm
+from .models import Transaction, BillingCycle, Date, Scheduled
+from .forms import TransactionForm, ScheduledForm
 from django.forms import modelformset_factory
 from datetime import date
 
@@ -107,8 +107,21 @@ def overview(request):
 
 def scheduled(request):
 
-    context = {
+    sched_list = Scheduled.objects.all()
 
+    form = ScheduledForm()
+    if request.method == 'POST':
+        form = ScheduledForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('scheduled')
+    else:
+        form = ScheduledForm()
+
+
+    context = {
+        'schedules': sched_list,
+        'form': form
     }
 
     return render(request, 'core/scheduled.html', context)

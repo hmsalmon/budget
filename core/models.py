@@ -34,6 +34,9 @@ class BillingCycle(models.Model):
 
 
 class Transaction(models.Model):
+
+    from core.utils import get_today
+
     TRANSACTION_TYPES = [
         ('IN', 'Income'),
         ('EX', 'Expense'),
@@ -47,7 +50,8 @@ class Transaction(models.Model):
     date = models.ForeignKey(
         Date,
         on_delete=models.CASCADE,
-        related_name="transactions")
+        related_name="transactions",
+        default=get_today)
     #     null=True,
     #     blank=True)
     billing_cycle = models.ForeignKey(
@@ -59,7 +63,9 @@ class Transaction(models.Model):
         )
     
     #billingCycle = models.CharField(max_length=50)#, default=date_to_billingcycle(date))
-    notes = models.TextField(blank=True)
+    notes = models.CharField(max_length = 100,blank=True)
+
+
 
     def save(self, *args, **kwargs):
         if not self.billing_cycle_id:
@@ -73,7 +79,36 @@ class Transaction(models.Model):
     def __str__(self):
         return f"{self.title} ({self.get_transaction_type_display()})"
 
+class Scheduled(models.Model):
 
+    from core.utils import get_today
+
+    pay_periods = [
+        ('D','Daily'),
+        ('W','Weekly'),
+        ('M','Monthly'),
+        ('Y','Yearly')
+    ]
+    
+    TRANSACTION_TYPES = [
+        ('IN', 'Income'),
+        ('EX', 'Expense'),
+    ]
+
+    name = models.CharField(max_length=100)
+    frequency = models.IntegerField()
+    period = models.CharField(max_length=2, choices=pay_periods)
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+    type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
+    active = models.BooleanField(default=True)
+    startDate = models.DateField(default=get_today)
+    endDate = models.DateField(null=True, blank=True)
+
+
+
+
+    def __str__(self):
+        pass
 
 
 
