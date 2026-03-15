@@ -1,6 +1,12 @@
 from django.db import models
 from django.utils import timezone
 
+
+def get_today():
+    from core.utils import get_today as _get_today
+    return _get_today()
+
+
 class Date(models.Model):
 
     date = models.DateField(primary_key = True)
@@ -34,8 +40,6 @@ class BillingCycle(models.Model):
 
 
 class Transaction(models.Model):
-
-    from core.utils import get_today
 
     TRANSACTION_TYPES = [
         ('IN', 'Income'),
@@ -80,8 +84,6 @@ class Transaction(models.Model):
         return f"{self.title} ({self.get_transaction_type_display()})"
 
 class Scheduled(models.Model):
-
-    from core.utils import get_today
 
     pay_periods = [
         ('D','Daily'),

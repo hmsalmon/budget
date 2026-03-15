@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+import json
 from django.utils import timezone as tz
 from django.db.models import Sum, Count
 from .models import Transaction, BillingCycle, Date, Scheduled
@@ -6,7 +8,7 @@ from .forms import TransactionForm, ScheduledForm
 from django.forms import modelformset_factory
 from datetime import date
 
-def index(request):
+def edit(request):
 
     TransactionFormSet = modelformset_factory(
         Transaction,
@@ -27,7 +29,7 @@ def index(request):
         "formset": formset
     }
 
-    return render(request, 'core/index.html', context)
+    return render(request, 'core/edit.html', context)
 
 def dashboard(request):
 
@@ -125,3 +127,31 @@ def scheduled(request):
     }
 
     return render(request, 'core/scheduled.html', context)
+def transaction_update(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        transaction.title = data.get('title', transaction.title)
+        transaction.amount = data.get('amount', transaction.amount)
+        transaction.transaction_type = data.get('transaction_type', transaction.transaction_type)
+        transaction.category = data.get('category', transaction.category)
+        transaction.notes = data.get('notes', transaction.notes)
+        date_val = data.get('date')
+        if date_val:
+            try:
+                date_obj = Date.objects.get(date=date_val)
+                transaction.date = date_obj
+            except Date.DoesNotExist:
+                return JsonResponse({'error': f'Date {date_val} not found in database'}, status=400)
+        transaction.save()
+        return JsonResponse({
+            'success': True,
+            'date': str(transaction.date_id),
+            'title': transaction.title,
+            'transaction_type': transaction.transaction_type,
+            'transaction_type_display': transaction.get_transaction_type_display(),
+            'category': transaction.category,
+            'amount': str(transaction.amount),
+            'notes': transaction.notes,
+        })
+    return JsonResponse({'error': 'Method not allowed'}, status=405)

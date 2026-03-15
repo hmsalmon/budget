@@ -35,25 +35,21 @@
 </div>
 
 
-<div class = "row mb-4">
-    <div class = "col-md-4">
-        <div class = "card card-header bg-dark text-white">
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card card-header bg-dark text-white">
             Select Billing Period to view transactions
         </div>
     </div>
     
-    <div class = "col-md-4">
-        <form method="GET" class = "col-md-4">
+    <div class="col-md-4">
+        <form method="GET" class="col-md-4">
             <select name="sel_cycle" class="form-select" style="max-width: 200px; display: inline-block;" onchange="this.form.submit()">
                 {% for b in billingCycles %}
-                    <option value = "{{ b.id }}" {% if b.id == selected_cycle %}selected{% endif %}> {{ b.displayName }}</option>
+                    <option value="{{ b.id }}" {% if b.id == selected_cycle %}selected{% endif %}> {{ b.displayName }}</option>
                 {% endfor %}
             </select>
         </form>
-    </div>
-
-    <div class = "col-md-4">
-        <div>{{selected_cycle}}</div>
     </div>
 </div>
 
@@ -61,7 +57,7 @@
 <!-- Transactions Table -->
 <div class="card">
     <div class="card-header bg-dark text-white">
-        Transactions for December 2025 Billing Cycle
+        Transactions
     </div>
     <div class="card-body">
         <table class="table table-striped table-hover">
@@ -73,17 +69,27 @@
                 <th>Category</th>
                 <th>Amount</th>
                 <th>Notes</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             {% for t in transactions %}
-            <tr>
-                <td>{{ t.date }}</td>
-                <td>{{ t.title }}</td>
-                <td>{{ t.get_transaction_type_display }}</td>
-                <td>{{ t.category }}</td>
-                <td>${{ t.amount }}</td>
-                <td>{{ t.notes }}</td>
+            <tr data-id="{{ t.pk }}"
+                data-date="{{ t.date_id }}"
+                data-title="{{ t.title }}"
+                data-type="{{ t.transaction_type }}"
+                data-category="{{ t.category }}"
+                data-amount="{{ t.amount }}"
+                data-notes="{{ t.notes }}">
+                <td class="cell-date">{{ t.date }}</td>
+                <td class="cell-title">{{ t.title }}</td>
+                <td class="cell-type">{{ t.get_transaction_type_display }}</td>
+                <td class="cell-category">{{ t.category }}</td>
+                <td class="cell-amount">${{ t.amount }}</td>
+                <td class="cell-notes">{{ t.notes }}</td>
+                <td class="cell-actions">
+                    <button class="btn btn-sm btn-outline-secondary btn-edit">Edit</button>
+                </td>
             </tr>
             {% empty %}
             <tr>
@@ -95,7 +101,7 @@
     </div>
 </div>
 
-<!-- Optional: Add new transaction form -->
+<!-- Add new transaction form -->
 <div class="card mt-4">
     <div class="card-header bg-secondary text-white">
         Add New Transaction
@@ -109,5 +115,100 @@
     </div>
 </div>
 
+<script>
+const CSRF_TOKEN = '{{ csrf_token }}';
+
+document.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', function () {
+        enterEditMode(this.closest('tr'));
+    });
+});
+
+function enterEditMode(row) {
+    const { date, title, type, category, amount, notes } = row.dataset;
+
+    row.querySelector('.cell-date').innerHTML =
+        `<input type="date" class="form-control form-control-sm" value="${date}">`;
+    row.querySelector('.cell-title').innerHTML =
+        `<input type="text" class="form-control form-control-sm" value="${escAttr(title)}">`;
+    row.querySelector('.cell-type').innerHTML =
+        `<select class="form-select form-select-sm">
+            <option value="IN" ${type === 'IN' ? 'selected' : ''}>Income</option>
+            <option value="EX" ${type === 'EX' ? 'selected' : ''}>Expense</option>
+        </select>`;
+    row.querySelector('.cell-category').innerHTML =
+        `<input type="text" class="form-control form-control-sm" value="${escAttr(category)}">`;
+    row.querySelector('.cell-amount').innerHTML =
+        `<input type="number" step="0.01" class="form-control form-control-sm" value="${amount}">`;
+    row.querySelector('.cell-notes').innerHTML =
+        `<input type="text" class="form-control form-control-sm" value="${escAttr(notes)}">`;
+
+    const actions = row.querySelector('.cell-actions');
+    actions.innerHTML =
+        `<button class="btn btn-sm btn-success btn-save me-1">Save</button>
+         <button class="btn btn-sm btn-outline-secondary btn-cancel">Cancel</button>`;
+    actions.querySelector('.btn-save').addEventListener('click', () => saveRow(row));
+    actions.querySelector('.btn-cancel').addEventListener('click', () =>
+        exitEditMode(row, {
+            date, title,
+            transaction_type: type,
+            transaction_type_display: type === 'IN' ? 'Income' : 'Expense',
+            category, amount, notes
+        })
+    );
+}
+
+function saveRow(row) {
+    const id = row.dataset.id;
+    const payload = {
+        date:             row.querySelector('.cell-date input').value,
+        title:            row.querySelector('.cell-title input').value,
+        transaction_type: row.querySelector('.cell-type select').value,
+        category:         row.querySelector('.cell-category input').value,
+        amount:           row.querySelector('.cell-amount input').value,
+        notes:            row.querySelector('.cell-notes input').value,
+    };
+
+    fetch(`/transaction/${id}/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+        body: JSON.stringify(payload),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            row.dataset.date     = data.date;
+            row.dataset.title    = data.title;
+            row.dataset.type     = data.transaction_type;
+            row.dataset.category = data.category;
+            row.dataset.amount   = data.amount;
+            row.dataset.notes    = data.notes;
+            exitEditMode(row, data);
+        } else {
+            alert(data.error || 'Save failed');
+        }
+    })
+    .catch(() => alert('Network error — save failed'));
+}
+
+function exitEditMode(row, data) {
+    row.querySelector('.cell-date').textContent     = data.date;
+    row.querySelector('.cell-title').textContent    = data.title;
+    row.querySelector('.cell-type').textContent     = data.transaction_type_display;
+    row.querySelector('.cell-category').textContent = data.category;
+    row.querySelector('.cell-amount').textContent   = '$' + data.amount;
+    row.querySelector('.cell-notes').textContent    = data.notes;
+
+    const actions = row.querySelector('.cell-actions');
+    actions.innerHTML = `<button class="btn btn-sm btn-outline-secondary btn-edit">Edit</button>`;
+    actions.querySelector('.btn-edit').addEventListener('click', function () {
+        enterEditMode(row);
+    });
+}
+
+function escAttr(str) {
+    return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+</script>
 
 {% endblock %}
